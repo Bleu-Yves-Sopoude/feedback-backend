@@ -1,11 +1,12 @@
 const asyncHandler = require('express-async-handler')
-
+const Feedback = require("../models/feedbackModel");
 //@desc Get all feedbacks
 //@route Get /api/feedbacks
 //@acces public
 
 const getFeedbacks = asyncHandler( async(req, res)=>{
-    res.status(200).json({message:"Get all feedbacks"});
+    const feedbacks = await Feedback.find();
+    res.status(200).json(feedbacks);
 });
 
 //@desc Create feedback
@@ -14,20 +15,30 @@ const getFeedbacks = asyncHandler( async(req, res)=>{
 
 const createFeedback =asyncHandler( async(req, res)=>{
     console.log("The request body is :",req.body)
-    const {name, email, pwd} =req.body;
-    if (!name || !email || !pwd){
+    const {rating, comment} =req.body;
+    if (!rating || !comment ){
         res.status(400);
         throw new Error("All fileds are mandatory !");
     }
-    res.status(201).json({message:"Create feedback"});
+    const feedback = await Feedback.create({
+        rating,
+        comment,
+    });
+
+    res.status(201).json(feedback);
 });
 
 //@desc  get a feedback
-//@route PUT /api/contact/:id
+//@route PUT /api/feedback/:id
 //@acces public
 
-const getFeedback = asyncHandler((req, res)=>{
-    res.status(200).json({message:`get feedback for ${req.params.id}`});
+const getFeedback = asyncHandler(async(req, res)=> {
+    const feedback = await Feedback.findById(req.params.id);
+    if(!feedback){
+        res.status(404);
+        throw new Error("Feedback not found");
+    }
+    res.status(200).json(feedback);
 });
 
 
@@ -38,15 +49,31 @@ const getFeedback = asyncHandler((req, res)=>{
 //@acces public
 
 const updateFeedback = asyncHandler( async(req, res)=>{
-    res.status(200).json({message:`Update feedback for ${req.params.id}`});
+    const feedback = await Feedback.findById(req.params.id);
+    if(!feedback){
+        res.status(404);
+        throw new Error("Feedback not found");
+    }
+    const updatedFeeback = await Feedback.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new: true}
+        );
+    res.status(200).json(updatedFeeback);
 });
 
 //@desc DELETE feedback
 //@route DELETE /api/feedback/:id
 //@acces public
 const deleteFeedback = asyncHandler( async(req, res)=>{
+    const feedback = await Feedback.findById(req.params.id);
+    if(!feedback){
+        res.status(404);
+        throw new Error("Feedback not found");
+    }
+    await feedback.remove();
     res.status(200).json({message:`Delete feedback for ${req.params.id}`});
 });
 
 
-module.exports = {getFeedback ,createFeedback, getFeedbacks, deleteFeedback, updateFeedback}
+module.exports = {getFeedbacks, getFeedback ,createFeedback, getFeedbacks, deleteFeedback, updateFeedback}
