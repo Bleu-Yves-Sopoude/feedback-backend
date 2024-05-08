@@ -8,7 +8,7 @@ connectDb();
 const port= process.env.PORT || 5000;
 app.use(express.json());
 app.use("/api/feedbacks", require("./routes/feebackRoutes"));
-//app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 app.use(errorHandler)
 
 
