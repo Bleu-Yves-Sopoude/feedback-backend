@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 //@acces public
 
 const registerUser = asyncHandler(async (req, res) => {
-    const {username, email, password} =req.body;
-    if(!username || !email || !password){
+    const {firstName,lastName,phone, role, email, password} =req.body;
+    if( !firstName || !lastName ||  !phone || !email || !password  || !role){
         res.status(400);
         throw new Error("All fields are mandatory");
     }
@@ -23,7 +23,10 @@ const registerUser = asyncHandler(async (req, res) => {
     console.log("Hashed password:", hashedPassword);
 
     const user = await User.create({
-        username,
+        firstName,
+        lastName,
+        phone,
+        role,
         email,
         password:hashedPassword,
     });
