@@ -10,6 +10,7 @@ const feedbackSchema = mongoose.Schema(
         },
 
 
+
     rating: {
         type: String,
         required: [true, "Please add the rating"],
